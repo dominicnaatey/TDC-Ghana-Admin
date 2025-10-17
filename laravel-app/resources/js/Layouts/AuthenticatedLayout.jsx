@@ -4,6 +4,7 @@ import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import Sidebar from '@/Components/Sidebar';
 
 export default function AuthenticatedLayout({ header, children }) {
     const user = usePage().props.auth.user;
@@ -45,10 +46,9 @@ export default function AuthenticatedLayout({ header, children }) {
                                                 {user.name}
 
                                                 <svg
-                                                    className="-me-0.5 ms-2 h-4 w-4"
+                                                    className="ms-2 h-4 w-4 fill-current"
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     viewBox="0 0 20 20"
-                                                    fill="currentColor"
                                                 >
                                                     <path
                                                         fillRule="evenodd"
@@ -170,7 +170,15 @@ export default function AuthenticatedLayout({ header, children }) {
                 </header>
             )}
 
-            <main>{children}</main>
+            {/* Sidebar + content layout */}
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+                <div className="flex gap-6">
+                    <aside className="hidden md:block w-64 shrink-0">
+                        <Sidebar />
+                    </aside>
+                    <main className="flex-1">{children}</main>
+                </div>
+            </div>
         </div>
     );
 }
