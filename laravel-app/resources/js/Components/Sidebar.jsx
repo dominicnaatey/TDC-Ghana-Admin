@@ -17,7 +17,15 @@ export default function Sidebar() {
                 <NavLink href={route('profile.edit')} active={route().current('profile.edit')}>
                     Profile
                 </NavLink>
-                {/* Add more links as needed */}
+                <NavLink href={route('admin.posts.index')} active={route().current('admin.posts.*')}>
+                    Posts
+                </NavLink>
+                <NavLink href={route('admin.gallery.index')} active={route().current('admin.gallery.*')}>
+                    Gallery
+                </NavLink>
+                <NavLink href={route('admin.projects.index')} active={route().current('admin.projects.*')}>
+                    Projects
+                </NavLink>
             </nav>
         </div>
     );
