@@ -1,10 +1,17 @@
 import { Transition } from '@headlessui/react';
 import { Link } from '@inertiajs/react';
 import { createContext, useContext, useState } from 'react';
+import type { Dispatch, SetStateAction, ReactNode, ComponentProps } from 'react';
 
-const DropDownContext = createContext();
+type DropDownContextValue = {
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+  toggleOpen: () => void;
+};
 
-const Dropdown = ({ children }) => {
+const DropDownContext = createContext<DropDownContextValue | undefined>(undefined);
+
+const Dropdown: React.FC<{ children?: ReactNode }> = ({ children }) => {
     const [open, setOpen] = useState(false);
 
     const toggleOpen = () => {
@@ -18,8 +25,8 @@ const Dropdown = ({ children }) => {
     );
 };
 
-const Trigger = ({ children }) => {
-    const { open, setOpen, toggleOpen } = useContext(DropDownContext);
+const Trigger: React.FC<{ children?: ReactNode }> = ({ children }) => {
+    const { open, setOpen, toggleOpen } = useContext(DropDownContext)!;
 
     return (
         <>
@@ -35,13 +42,18 @@ const Trigger = ({ children }) => {
     );
 };
 
-const Content = ({
+const Content: React.FC<{
+    align?: 'left' | 'right';
+    width?: '48' | string;
+    contentClasses?: string;
+    children?: ReactNode;
+}> = ({
     align = 'right',
     width = '48',
     contentClasses = 'py-1 bg-white',
     children,
 }) => {
-    const { open, setOpen } = useContext(DropDownContext);
+    const { open, setOpen } = useContext(DropDownContext)!;
 
     let alignmentClasses = 'origin-top';
 
@@ -86,7 +98,7 @@ const Content = ({
     );
 };
 
-const DropdownLink = ({ className = '', children, ...props }) => {
+const DropdownLink: React.FC<{ className?: string; children?: ReactNode } & ComponentProps<typeof Link>> = ({ className = '', children, ...props }) => {
     return (
         <Link
             {...props}
@@ -100,8 +112,21 @@ const DropdownLink = ({ className = '', children, ...props }) => {
     );
 };
 
-Dropdown.Trigger = Trigger;
-Dropdown.Content = Content;
-Dropdown.Link = DropdownLink;
+// Define a typed composite component interface for Dropdown with static subcomponents
+type DropdownComponent = React.FC<{ children?: ReactNode }> & {
+  Trigger: React.FC<{ children?: ReactNode }>;
+  Content: React.FC<{
+    align?: 'left' | 'right';
+    width?: '48' | string;
+    contentClasses?: string;
+    children?: ReactNode;
+  }>;
+  Link: React.FC<{ className?: string; children?: ReactNode } & ComponentProps<typeof Link>>;
+};
 
-export default Dropdown;
+const DropdownWithStatics = Dropdown as DropdownComponent;
+DropdownWithStatics.Trigger = Trigger;
+DropdownWithStatics.Content = Content;
+DropdownWithStatics.Link = DropdownLink;
+
+export default DropdownWithStatics;
