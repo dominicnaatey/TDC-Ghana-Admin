@@ -46,9 +46,9 @@ export default function Sidebar() {
 
       {/* --- Navigation --- */}
       <MTList>
-        <MTListItem className={LIST_ITEM_STYLES}>
+        <MTListItem className={`${LIST_ITEM_STYLES} ${route().current("dashboard") ? "bg-blue-100" : ""}` }>
           <MTListItemPrefix>
-            <RectangleGroupIcon className="h-5 w-5" />
+            <RectangleGroupIcon className="h-5 w-5 m-2 text-blue-500" />
           </MTListItemPrefix>
           <Link
             href={route("dashboard")}
@@ -61,11 +61,11 @@ export default function Sidebar() {
         <MTAccordion open={open === 1}>
           <MTAccordionHeader
             onClick={() => handleOpen(1)}
-            className="px-3 py-2 cursor-pointer text-gray-700 hover:bg-gray-50 rounded-lg"
+            className={`px-3 py-2 cursor-pointer text-gray-700 hover:bg-gray-50 rounded-lg ${route().current("admin.posts.*") || (typeof window !== "undefined" && new URL(window.location.href).searchParams.get("view") === "categories") ? "bg-blue-100" : ""}`}
           >
             <div className="flex items-center w-full">
               <MTListItemPrefix>
-                <DocumentTextIcon className="h-5 w-5" />
+                <DocumentTextIcon className="h-5 w-5 text-blue-500" />
               </MTListItemPrefix>
               <MTTypography className="mr-auto font-normal text-inherit">
                 Posts
@@ -78,21 +78,37 @@ export default function Sidebar() {
           </MTAccordionHeader>
           <MTAccordionBody className="py-1">
             <MTList className="p-0">
-              <MTListItem className={`pl-10 ${LIST_ITEM_STYLES}`}>
+              <MTListItem className={`pl-10 ${LIST_ITEM_STYLES} ${route().current("admin.posts.create") ? "bg-blue-100" : ""}`}>
+                <Link
+                  href={route("admin.posts.create")}
+                  className={`w-full ${route().current("admin.posts.create") ? "text-gray-900 font-medium" : "text-gray-600"}`}
+                >
+                  Add new
+                </Link>
+              </MTListItem>
+              <MTListItem className={`pl-10 ${LIST_ITEM_STYLES} ${route().current("admin.posts.index") ? "bg-blue-100" : ""}`}>
                 <Link
                   href={route("admin.posts.index")}
-                  className={`w-full ${route().current("admin.posts.*") ? "text-gray-900 font-medium" : "text-gray-600"}`}
+                  className={`w-full ${route().current("admin.posts.index") ? "text-gray-900 font-medium" : "text-gray-600"}`}
                 >
-                  All Posts
+                  All posts
+                </Link>
+              </MTListItem>
+              <MTListItem className={`pl-10 ${LIST_ITEM_STYLES} ${typeof window !== "undefined" && new URL(window.location.href).searchParams.get("view") === "categories" ? "bg-blue-100" : ""}`}>
+                <Link
+                  href={`${route("admin.posts.index")}?view=categories`}
+                  className="w-full text-gray-600"
+                >
+                  Categories
                 </Link>
               </MTListItem>
             </MTList>
           </MTAccordionBody>
         </MTAccordion>
 
-        <MTListItem className={LIST_ITEM_STYLES}>
+        <MTListItem className={`${LIST_ITEM_STYLES} ${route().current("admin.gallery.*") ? "bg-blue-100" : ""}` }>
           <MTListItemPrefix>
-            <PhotoIcon className="h-5 w-5" />
+            <PhotoIcon className="h-5 w-5 m-2 text-blue-500" />
           </MTListItemPrefix>
           <Link
             href={route("admin.gallery.index")}
@@ -102,9 +118,9 @@ export default function Sidebar() {
           </Link>
         </MTListItem>
 
-        <MTListItem className={LIST_ITEM_STYLES}>
+        <MTListItem className={`${LIST_ITEM_STYLES} ${route().current("admin.projects.*") ? "bg-blue-100" : ""}` }>
           <MTListItemPrefix>
-            <FolderIcon className="h-5 w-5" />
+            <FolderIcon className="h-5 w-5 m-2 text-blue-500" />
           </MTListItemPrefix>
           <Link
             href={route("admin.projects.index")}
@@ -118,9 +134,9 @@ export default function Sidebar() {
       <hr className="my-3 border-gray-200" />
 
       {/* Porfile */}
-      <MTListItem className={LIST_ITEM_STYLES}>
+      <MTListItem className={`${LIST_ITEM_STYLES} ${route().current("profile.edit") ? "bg-blue-100" : ""}` }>
         <MTListItemPrefix>
-          <UserIcon className="h-5 w-5" />
+          <UserIcon className="h-5 w-5 m-2 text-blue-500" />
         </MTListItemPrefix>
         <Link
           href={route("profile.edit")}
@@ -134,7 +150,7 @@ export default function Sidebar() {
       <MTList>
         <MTListItem className={LIST_ITEM_STYLES}>
           <MTListItemPrefix>
-            <ArrowLeftStartOnRectangleIcon className="h-5 w-5" />
+            <ArrowLeftStartOnRectangleIcon className="h-5 w-5 m-2 text-blue-500" />
           </MTListItemPrefix>
           <Link href={route("logout")} method="post" as="button" className="text-gray-600 w-full text-left">
             Sign Out
