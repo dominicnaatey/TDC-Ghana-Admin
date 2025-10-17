@@ -10,7 +10,7 @@ export default function Sidebar() {
                 </Link>
             </div>
 
-            <nav className="space-y-1">
+            <nav className="flex flex-col space-y-1">
                 <NavLink href={route('dashboard')} active={route().current('dashboard')}>
                     Dashboard
                 </NavLink>
