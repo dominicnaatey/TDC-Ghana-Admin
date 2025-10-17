@@ -1,4 +1,6 @@
-export default function ApplicationLogo({ className = 'h-8 w-auto', ...props }) {
+import type { SVGProps } from 'react';
+
+export default function ApplicationLogo({ className = 'h-8 w-auto', ...props }: { className?: string } & SVGProps<SVGSVGElement>) {
     return (
         <svg
             {...props}

@@ -1,9 +1,13 @@
+import type { ButtonHTMLAttributes, ReactNode } from 'react';
+
+type Props = { className?: string; children?: ReactNode } & ButtonHTMLAttributes<HTMLButtonElement>;
+
 export default function PrimaryButton({
     className = '',
     disabled,
     children,
     ...props
-}) {
+}: Props) {
     return (
         <button
             {...props}
