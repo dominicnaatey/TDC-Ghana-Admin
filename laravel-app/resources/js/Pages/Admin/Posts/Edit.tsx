@@ -1,24 +1,34 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
+import type { FormEvent, ChangeEvent } from 'react';
 
-export default function Create() {
-    const { data, setData, post, processing, errors, reset } = useForm({
-        title: '',
-        slug: '',
-        excerpt: '',
-        content: '',
-        is_published: false,
-        published_at: '',
+type PostEditFormData = {
+    title: string;
+    slug: string;
+    excerpt: string;
+    content: string;
+    is_published: boolean;
+    published_at: string;
+};
+
+export default function Edit({ post }: { post: { id: number; title?: string | null; slug?: string | null; excerpt?: string | null; content?: string | null; is_published?: boolean | number; published_at?: string | null } }) {
+    const { data, setData, put, processing, errors } = useForm<PostEditFormData>({
+        title: post.title || '',
+        slug: post.slug || '',
+        excerpt: post.excerpt || '',
+        content: post.content || '',
+        is_published: !!post.is_published,
+        published_at: post.published_at ? post.published_at.replace(' ', 'T') : '',
     });
 
-    const submit = (e) => {
+    const submit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        post(route('admin.posts.store'));
+        put(route('admin.posts.update', post.id));
     };
 
     return (
-        <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800">New Post</h2>}>
-            <Head title="Create Post" />
+        <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Edit Post</h2>}>
+            <Head title={`Edit: ${post.title}`} />
 
             <form onSubmit={submit} className="space-y-4 max-w-3xl">
                 <div>
@@ -26,7 +36,7 @@ export default function Create() {
                     <input
                         type="text"
                         value={data.title}
-                        onChange={(e) => setData('title', e.target.value)}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setData('title', e.target.value)}
                         className="mt-1 w-full rounded border-gray-300"
                     />
                     {errors.title && <p className="text-sm text-red-600">{errors.title}</p>}
@@ -36,16 +46,16 @@ export default function Create() {
                     <input
                         type="text"
                         value={data.slug}
-                        onChange={(e) => setData('slug', e.target.value)}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setData('slug', e.target.value)}
                         className="mt-1 w-full rounded border-gray-300"
                     />
                     {errors.slug && <p className="text-sm text-red-600">{errors.slug}</p>}
                 </div>
                 <div>
-                    <label className="block text-sm font-medium">Excerpt</label>
+                    <label className="block text sm font-medium">Excerpt</label>
                     <textarea
                         value={data.excerpt}
-                        onChange={(e) => setData('excerpt', e.target.value)}
+                        onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setData('excerpt', e.target.value)}
                         className="mt-1 w-full rounded border-gray-300"
                     />
                     {errors.excerpt && <p className="text-sm text-red-600">{errors.excerpt}</p>}
@@ -54,7 +64,7 @@ export default function Create() {
                     <label className="block text-sm font-medium">Content</label>
                     <textarea
                         value={data.content}
-                        onChange={(e) => setData('content', e.target.value)}
+                        onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setData('content', e.target.value)}
                         className="mt-1 w-full rounded border-gray-300 h-40"
                     />
                     {errors.content && <p className="text-sm text-red-600">{errors.content}</p>}
@@ -64,7 +74,7 @@ export default function Create() {
                         id="is_published"
                         type="checkbox"
                         checked={data.is_published}
-                        onChange={(e) => setData('is_published', e.target.checked)}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setData('is_published', e.target.checked)}
                     />
                     <label htmlFor="is_published">Publish</label>
                 </div>
@@ -73,7 +83,7 @@ export default function Create() {
                     <input
                         type="datetime-local"
                         value={data.published_at}
-                        onChange={(e) => setData('published_at', e.target.value)}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setData('published_at', e.target.value)}
                         className="mt-1 w-full rounded border-gray-300"
                     />
                     {errors.published_at && <p className="text-sm text-red-600">{errors.published_at}</p>}
@@ -85,7 +95,7 @@ export default function Create() {
                         disabled={processing}
                         className="rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
                     >
-                        Save
+                        Update
                     </button>
                 </div>
             </form>

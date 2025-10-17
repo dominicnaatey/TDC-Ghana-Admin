@@ -9,8 +9,9 @@ export default function UpdateProfileInformation({
     mustVerifyEmail,
     status,
     className = '',
-}) {
-    const user = usePage().props.auth.user;
+}: { mustVerifyEmail?: boolean; status?: string; className?: string }) {
+    const { auth } = usePage<{ auth: { user: { name: string; email: string; email_verified_at: string | null } } }>().props;
+    const user = auth.user;
 
     const { data, setData, patch, errors, processing, recentlySuccessful } =
         useForm({
@@ -18,9 +19,8 @@ export default function UpdateProfileInformation({
             email: user.email,
         });
 
-    const submit = (e) => {
+    const submit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
         patch(route('profile.update'));
     };
 

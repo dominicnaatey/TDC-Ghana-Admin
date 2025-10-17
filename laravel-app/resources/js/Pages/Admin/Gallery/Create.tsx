@@ -1,8 +1,18 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
+import type { FormEvent, ChangeEvent } from 'react';
+
+type GalleryFormData = {
+    title: string;
+    image: File | null;
+    caption: string;
+    sort_order: number;
+    is_published: boolean;
+    published_at: string;
+};
 
 export default function Create() {
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing, errors } = useForm<GalleryFormData>({
         title: '',
         image: null,
         caption: '',
@@ -11,7 +21,7 @@ export default function Create() {
         published_at: '',
     });
 
-    const submit = (e) => {
+    const submit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         post(route('admin.gallery.store'));
     };
@@ -26,7 +36,7 @@ export default function Create() {
                     <input
                         type="text"
                         value={data.title}
-                        onChange={(e) => setData('title', e.target.value)}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setData('title', e.target.value)}
                         className="mt-1 w-full rounded border-gray-300"
                     />
                     {errors.title && <p className="text-sm text-red-600">{errors.title}</p>}
@@ -35,7 +45,7 @@ export default function Create() {
                     <label className="block text-sm font-medium">Image</label>
                     <input
                         type="file"
-                        onChange={(e) => setData('image', e.target.files[0])}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setData('image', e.target.files?.[0] ?? null)}
                         className="mt-1 w-full"
                     />
                     {errors.image && <p className="text-sm text-red-600">{errors.image}</p>}
@@ -44,7 +54,7 @@ export default function Create() {
                     <label className="block text-sm font-medium">Caption</label>
                     <textarea
                         value={data.caption}
-                        onChange={(e) => setData('caption', e.target.value)}
+                        onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setData('caption', e.target.value)}
                         className="mt-1 w-full rounded border-gray-300"
                     />
                     {errors.caption && <p className="text-sm text-red-600">{errors.caption}</p>}
@@ -54,7 +64,7 @@ export default function Create() {
                     <input
                         type="number"
                         value={data.sort_order}
-                        onChange={(e) => setData('sort_order', Number(e.target.value))}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setData('sort_order', Number(e.target.value))}
                         className="mt-1 w-full rounded border-gray-300"
                     />
                     {errors.sort_order && <p className="text-sm text-red-600">{errors.sort_order}</p>}
@@ -64,7 +74,7 @@ export default function Create() {
                         id="is_published"
                         type="checkbox"
                         checked={data.is_published}
-                        onChange={(e) => setData('is_published', e.target.checked)}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setData('is_published', e.target.checked)}
                     />
                     <label htmlFor="is_published">Publish</label>
                 </div>
@@ -73,7 +83,7 @@ export default function Create() {
                     <input
                         type="datetime-local"
                         value={data.published_at}
-                        onChange={(e) => setData('published_at', e.target.value)}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setData('published_at', e.target.value)}
                         className="mt-1 w-full rounded border-gray-300"
                     />
                     {errors.published_at && <p className="text-sm text-red-600">{errors.published_at}</p>}

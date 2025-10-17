@@ -8,7 +8,7 @@ declare global {
   // Ziggy route() helper is available globally in this project
   const route: (
     name?: string,
-    params?: Record<string, any>,
+    params?: number | string | (string | number)[] | Record<string, any>,
     absolute?: boolean,
     config?: any
   ) => any;

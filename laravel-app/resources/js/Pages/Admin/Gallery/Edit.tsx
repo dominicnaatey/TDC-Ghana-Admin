@@ -1,8 +1,19 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
+import type { FormEvent, ChangeEvent } from 'react';
 
-export default function Edit({ image }) {
-    const { data, setData, post, processing, errors } = useForm({
+type GalleryEditFormData = {
+    _method: 'put';
+    title: string;
+    image: File | null;
+    caption: string;
+    sort_order: number;
+    is_published: boolean;
+    published_at: string;
+};
+
+export default function Edit({ image }: { image: { id: number; title?: string | null; caption?: string | null; sort_order?: number | null; is_published?: boolean | number; published_at?: string | null } }) {
+    const { data, setData, post, processing, errors } = useForm<GalleryEditFormData>({
         _method: 'put',
         title: image.title || '',
         image: null,
@@ -12,7 +23,7 @@ export default function Edit({ image }) {
         published_at: image.published_at ? image.published_at.replace(' ', 'T') : '',
     });
 
-    const submit = (e) => {
+    const submit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         post(route('admin.gallery.update', image.id));
     };
@@ -27,7 +38,7 @@ export default function Edit({ image }) {
                     <input
                         type="text"
                         value={data.title}
-                        onChange={(e) => setData('title', e.target.value)}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setData('title', e.target.value)}
                         className="mt-1 w-full rounded border-gray-300"
                     />
                     {errors.title && <p className="text-sm text-red-600">{errors.title}</p>}
@@ -36,7 +47,7 @@ export default function Edit({ image }) {
                     <label className="block text-sm font-medium">Image (optional)</label>
                     <input
                         type="file"
-                        onChange={(e) => setData('image', e.target.files[0])}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setData('image', e.target.files?.[0] ?? null)}
                         className="mt-1 w-full"
                     />
                     {errors.image && <p className="text-sm text-red-600">{errors.image}</p>}
@@ -45,7 +56,7 @@ export default function Edit({ image }) {
                     <label className="block text-sm font-medium">Caption</label>
                     <textarea
                         value={data.caption}
-                        onChange={(e) => setData('caption', e.target.value)}
+                        onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setData('caption', e.target.value)}
                         className="mt-1 w-full rounded border-gray-300"
                     />
                     {errors.caption && <p className="text-sm text-red-600">{errors.caption}</p>}
@@ -55,7 +66,7 @@ export default function Edit({ image }) {
                     <input
                         type="number"
                         value={data.sort_order}
-                        onChange={(e) => setData('sort_order', Number(e.target.value))}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setData('sort_order', Number(e.target.value))}
                         className="mt-1 w-full rounded border-gray-300"
                     />
                     {errors.sort_order && <p className="text-sm text-red-600">{errors.sort_order}</p>}
@@ -65,7 +76,7 @@ export default function Edit({ image }) {
                         id="is_published"
                         type="checkbox"
                         checked={data.is_published}
-                        onChange={(e) => setData('is_published', e.target.checked)}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setData('is_published', e.target.checked)}
                     />
                     <label htmlFor="is_published">Publish</label>
                 </div>
@@ -74,7 +85,7 @@ export default function Edit({ image }) {
                     <input
                         type="datetime-local"
                         value={data.published_at}
-                        onChange={(e) => setData('published_at', e.target.value)}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setData('published_at', e.target.value)}
                         className="mt-1 w-full rounded border-gray-300"
                     />
                     {errors.published_at && <p className="text-sm text-red-600">{errors.published_at}</p>}

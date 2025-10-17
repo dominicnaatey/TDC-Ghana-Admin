@@ -1,8 +1,20 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
+import type { FormEvent, ChangeEvent } from 'react';
+
+type ProjectFormData = {
+    name: string;
+    slug: string;
+    description: string;
+    cover_image: File | null;
+    start_date: string;
+    end_date: string;
+    is_published: boolean;
+    published_at: string;
+};
 
 export default function Create() {
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing, errors } = useForm<ProjectFormData>({
         name: '',
         slug: '',
         description: '',
@@ -13,7 +25,7 @@ export default function Create() {
         published_at: '',
     });
 
-    const submit = (e) => {
+    const submit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         post(route('admin.projects.store'));
     };
@@ -28,7 +40,7 @@ export default function Create() {
                     <input
                         type="text"
                         value={data.name}
-                        onChange={(e) => setData('name', e.target.value)}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setData('name', e.target.value)}
                         className="mt-1 w-full rounded border-gray-300"
                     />
                     {errors.name && <p className="text-sm text-red-600">{errors.name}</p>}
@@ -38,16 +50,16 @@ export default function Create() {
                     <input
                         type="text"
                         value={data.slug}
-                        onChange={(e) => setData('slug', e.target.value)}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setData('slug', e.target.value)}
                         className="mt-1 w-full rounded border-gray-300"
                     />
                     {errors.slug && <p className="text-sm text-red-600">{errors.slug}</p>}
                 </div>
                 <div>
-                    <label className="block text-sm font-medium">Description</label>
+                    <label className="block text sm font-medium">Description</label>
                     <textarea
                         value={data.description}
-                        onChange={(e) => setData('description', e.target.value)}
+                        onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setData('description', e.target.value)}
                         className="mt-1 w-full rounded border-gray-300 h-32"
                     />
                     {errors.description && <p className="text-sm text-red-600">{errors.description}</p>}
@@ -56,7 +68,7 @@ export default function Create() {
                     <label className="block text-sm font-medium">Cover Image (optional)</label>
                     <input
                         type="file"
-                        onChange={(e) => setData('cover_image', e.target.files[0])}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setData('cover_image', e.target.files?.[0] ?? null)}
                         className="mt-1 w-full"
                     />
                     {errors.cover_image && <p className="text-sm text-red-600">{errors.cover_image}</p>}
@@ -67,7 +79,7 @@ export default function Create() {
                         <input
                             type="date"
                             value={data.start_date}
-                            onChange={(e) => setData('start_date', e.target.value)}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => setData('start_date', e.target.value)}
                             className="mt-1 w-full rounded border-gray-300"
                         />
                         {errors.start_date && <p className="text-sm text-red-600">{errors.start_date}</p>}
@@ -77,7 +89,7 @@ export default function Create() {
                         <input
                             type="date"
                             value={data.end_date}
-                            onChange={(e) => setData('end_date', e.target.value)}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => setData('end_date', e.target.value)}
                             className="mt-1 w-full rounded border-gray-300"
                         />
                         {errors.end_date && <p className="text-sm text-red-600">{errors.end_date}</p>}
@@ -88,7 +100,7 @@ export default function Create() {
                         id="is_published"
                         type="checkbox"
                         checked={data.is_published}
-                        onChange={(e) => setData('is_published', e.target.checked)}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setData('is_published', e.target.checked)}
                     />
                     <label htmlFor="is_published">Publish</label>
                 </div>
@@ -97,7 +109,7 @@ export default function Create() {
                     <input
                         type="datetime-local"
                         value={data.published_at}
-                        onChange={(e) => setData('published_at', e.target.value)}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setData('published_at', e.target.value)}
                         className="mt-1 w-full rounded border-gray-300"
                     />
                     {errors.published_at && <p className="text-sm text-red-600">{errors.published_at}</p>}
