@@ -9,11 +9,18 @@ const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
-    resolve: (name) =>
-        resolvePageComponent(
-            `./Pages/${name}.tsx`,
-            import.meta.glob('./Pages/**/*.tsx'),
-        ),
+    resolve: (name) => {
+        const pages = import.meta.glob('./Pages/**/*.{jsx,tsx}');
+        const tsx = pages[`./Pages/${name}.tsx`];
+        const jsx = pages[`./Pages/${name}.jsx`];
+        if (tsx) {
+            return tsx().then((m: any) => m.default ?? m);
+        }
+        if (jsx) {
+            return jsx().then((m: any) => m.default ?? m);
+        }
+        throw new Error(`Page not found: ${name}`);
+    },
     setup({ el, App, props }) {
         const root = createRoot(el);
 
