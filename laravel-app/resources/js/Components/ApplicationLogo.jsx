@@ -1,7 +1,8 @@
-export default function ApplicationLogo(props) {
+export default function ApplicationLogo({ className = 'h-8 w-auto', ...props }) {
     return (
         <svg
             {...props}
+            className={className}
             viewBox="0 0 316 316"
             xmlns="http://www.w3.org/2000/svg"
         >
