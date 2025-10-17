@@ -65,7 +65,7 @@ export default function Sidebar() {
           >
             <div className="flex items-center w-full">
               <MTListItemPrefix>
-                <DocumentTextIcon className="h-5 w-5 text-blue-500" />
+                <DocumentTextIcon className="h-5 w-5 mr-2 text-blue-500" />
               </MTListItemPrefix>
               <MTTypography className="mr-auto font-normal text-inherit">
                 Posts
