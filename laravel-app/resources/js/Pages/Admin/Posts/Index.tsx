@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import Modal from '@/Components/Modal';
 import DangerButton from '@/Components/DangerButton';
@@ -10,6 +10,9 @@ export default function Index({ posts }) {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [postToDelete, setPostToDelete] = useState<number | null>(null);
     const [processing, setProcessing] = useState(false);
+
+    const { counts } = usePage<{ counts?: { posts_deleted?: number } }>().props;
+    const deletedCount = counts?.posts_deleted ?? 0;
 
     const openDeleteModal = (id: number) => {
         setPostToDelete(id);
@@ -44,7 +47,7 @@ export default function Index({ posts }) {
                         href={route('admin.posts.deleted')}
                         className="rounded bg-gray-200 px-3 py-2 text-gray-800 hover:bg-gray-300"
                     >
-                        Deleted Posts
+                        Deleted Posts ({deletedCount})
                     </Link>
                     <Link
                         href={route('admin.posts.create')}

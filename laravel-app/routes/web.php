@@ -23,12 +23,13 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
-    Route::resource('posts', PostController::class);
-
-    // Deleted posts management
+    // Deleted posts management (place before resource to avoid conflicts)
     Route::get('posts/deleted', [PostController::class, 'deleted'])->name('posts.deleted');
     Route::post('posts/{post}/restore', [PostController::class, 'restore'])->name('posts.restore');
     Route::delete('posts/{post}/force', [PostController::class, 'forceDelete'])->name('posts.force');
+
+    // Posts resources (exclude show to prevent /posts/{post} catching 'deleted')
+    Route::resource('posts', PostController::class)->except(['show']);
 
     Route::resource('gallery', GalleryImageController::class);
     Route::resource('projects', ProjectController::class);
