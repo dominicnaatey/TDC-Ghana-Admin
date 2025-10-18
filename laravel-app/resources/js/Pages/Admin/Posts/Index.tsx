@@ -11,8 +11,9 @@ export default function Index({ posts }) {
     const [postToDelete, setPostToDelete] = useState<number | null>(null);
     const [processing, setProcessing] = useState(false);
 
-    const { counts } = usePage<{ counts?: { posts_deleted?: number } }>().props;
+    const { counts } = usePage<{ counts?: { posts_deleted?: number; posts_total?: number } }>().props;
     const deletedCount = counts?.posts_deleted ?? 0;
+    const totalCount = counts?.posts_total ?? posts?.meta?.total ?? posts?.total ?? posts?.data?.length ?? 0;
 
     const openDeleteModal = (id: number) => {
         setPostToDelete(id);
@@ -41,7 +42,10 @@ export default function Index({ posts }) {
             <Head title="Posts" />
 
             <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium">All Posts</h3>
+                <h3 className="text-lg font-medium flex items-center gap-2">
+                    All Posts
+                    <span className="rounded bg-indigo-100 px-2 py-0.5 text-indigo-700 text-sm">{totalCount}</span>
+                </h3>
                 <div className="flex items-center gap-2">
                     {deletedCount > 0 ? (
                         <Link

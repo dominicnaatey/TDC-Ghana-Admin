@@ -41,6 +41,7 @@ class HandleInertiaRequests extends Middleware
             ],
             'counts' => [
                 'posts_deleted' => Post::onlyTrashed()->count(),
+                'posts_total' => Post::count(),
             ],
         ];
     }
