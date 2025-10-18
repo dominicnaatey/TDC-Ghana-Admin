@@ -1,7 +1,36 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, router } from '@inertiajs/react';
+import { useState } from 'react';
+import Modal from '@/Components/Modal';
+import DangerButton from '@/Components/DangerButton';
+import SecondaryButton from '@/Components/SecondaryButton';
+import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 export default function Index({ posts }) {
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [postToDelete, setPostToDelete] = useState<number | null>(null);
+    const [processing, setProcessing] = useState(false);
+
+    const openDeleteModal = (id: number) => {
+        setPostToDelete(id);
+        setShowDeleteModal(true);
+    };
+
+    const closeDeleteModal = () => {
+        setShowDeleteModal(false);
+        setPostToDelete(null);
+    };
+
+    const confirmDelete = () => {
+        if (!postToDelete) return;
+        router.delete(route('admin.posts.destroy', postToDelete), {
+            preserveScroll: true,
+            onStart: () => setProcessing(true),
+            onFinish: () => setProcessing(false),
+            onSuccess: () => closeDeleteModal(),
+        });
+    };
+
     return (
         <AuthenticatedLayout
             header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Posts</h2>}
@@ -10,12 +39,20 @@ export default function Index({ posts }) {
 
             <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-medium">All Posts</h3>
-                <Link
-                    href={route('admin.posts.create')}
-                    className="rounded bg-indigo-600 px-3 py-2 text-white hover:bg-indigo-700"
-                >
-                    New Post
-                </Link>
+                <div className="flex items-center gap-2">
+                    <Link
+                        href={route('admin.posts.deleted')}
+                        className="rounded bg-gray-200 px-3 py-2 text-gray-800 hover:bg-gray-300"
+                    >
+                        Deleted Posts
+                    </Link>
+                    <Link
+                        href={route('admin.posts.create')}
+                        className="rounded bg-indigo-600 px-3 py-2 text-white hover:bg-indigo-700"
+                    >
+                        New Post
+                    </Link>
+                </div>
             </div>
 
             <div className="overflow-hidden rounded border bg-white">
@@ -24,7 +61,7 @@ export default function Index({ posts }) {
                         <tr>
                             <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
                             <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Slug</th>
-+                           <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
+                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
                             <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                             <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
                         </tr>
@@ -34,7 +71,7 @@ export default function Index({ posts }) {
                             <tr key={post.id}>
                                 <td className="px-4 py-2">{post.title}</td>
                                 <td className="px-4 py-2 text-sm text-gray-500">{post.slug}</td>
-+                               <td className="px-4 py-2 text-sm text-gray-700">{post.category?.name ?? '-'}</td>
+                                <td className="px-4 py-2 text-sm text-gray-700">{post.category?.name ?? '-'}</td>
                                 <td className="px-4 py-2">
                                     {post.is_published ? (
                                         <span className="rounded bg-green-100 px-2 py-1 text-green-700 text-xs">Published</span>
@@ -45,15 +82,17 @@ export default function Index({ posts }) {
                                 <td className="px-4 py-2 text-right">
                                     <Link
                                         href={route('admin.posts.edit', post.id)}
-                                        className="mr-2 text-indigo-600 hover:text-indigo-800"
+                                        className="mr-2 inline-flex items-center rounded p-1 text-indigo-600 hover:text-indigo-800"
+                                        title="Edit"
                                     >
-                                        Edit
+                                        <PencilSquareIcon className="h-5 w-5" />
                                     </Link>
                                     <button
-                                        onClick={() => router.delete(route('admin.posts.destroy', post.id))}
-                                        className="text-red-600 hover:text-red-800"
+                                        onClick={() => openDeleteModal(post.id)}
+                                        className="inline-flex items-center rounded p-1 text-red-600 hover:text-red-800"
+                                        title="Move to Deleted"
                                     >
-                                        Delete
+                                        <TrashIcon className="h-5 w-5" />
                                     </button>
                                 </td>
                             </tr>
@@ -73,6 +112,24 @@ export default function Index({ posts }) {
                     />
                 ))}
             </div>
+
+            {/* Soft Delete Confirmation Modal */}
+            <Modal show={showDeleteModal} onClose={closeDeleteModal}>
+                <div className="p-6">
+                    <h3 className="text-lg font-semibold text-gray-900">Move post to Deleted Posts?</h3>
+                    <p className="mt-2 text-sm text-gray-600">
+                        The post will be moved to the Deleted Posts folder. You can restore it later.
+                    </p>
+                    <div className="mt-6 flex justify-end gap-3">
+                        <SecondaryButton onClick={closeDeleteModal} disabled={processing}>
+                            Cancel
+                        </SecondaryButton>
+                        <DangerButton onClick={confirmDelete} disabled={processing}>
+                            {processing ? 'Moving…' : 'Move to Deleted'}
+                        </DangerButton>
+                    </div>
+                </div>
+            </Modal>
         </AuthenticatedLayout>
     );
 }

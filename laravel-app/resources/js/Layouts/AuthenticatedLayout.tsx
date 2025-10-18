@@ -8,7 +8,7 @@ import Sidebar from '@/Components/Sidebar';
 import { ReactNode } from 'react';
 
 export default function AuthenticatedLayout({ header, children }: { header?: ReactNode; children?: ReactNode }) {
-    const { auth } = usePage<{ auth: { user: { name: string; email: string } } }>().props;
+    const { auth, flash } = usePage<{ auth: { user: { name: string; email: string } } ; flash?: { success?: string; error?: string } }>().props;
     const user = auth.user;
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
@@ -181,6 +181,22 @@ export default function AuthenticatedLayout({ header, children }: { header?: Rea
                     </div>
                 </div>
             </nav>
+
+            {/* Flash messages */}
+            {flash?.success && (
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-2">
+                    <div className="rounded border border-green-200 bg-green-50 text-green-700 px-4 py-2">
+                        {flash.success}
+                    </div>
+                </div>
+            )}
+            {flash?.error && (
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-2">
+                    <div className="rounded border border-red-200 bg-red-50 text-red-700 px-4 py-2">
+                        {flash.error}
+                    </div>
+                </div>
+            )}
 
             {header && (
                 <header className="bg-white shadow">

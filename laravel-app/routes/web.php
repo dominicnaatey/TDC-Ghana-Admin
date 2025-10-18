@@ -24,6 +24,12 @@ Route::get('/dashboard', function () {
 
 Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('posts', PostController::class);
+
+    // Deleted posts management
+    Route::get('posts/deleted', [PostController::class, 'deleted'])->name('posts.deleted');
+    Route::post('posts/{post}/restore', [PostController::class, 'restore'])->name('posts.restore');
+    Route::delete('posts/{post}/force', [PostController::class, 'forceDelete'])->name('posts.force');
+
     Route::resource('gallery', GalleryImageController::class);
     Route::resource('projects', ProjectController::class);
     Route::resource('categories', CategoryController::class)->except(['show']);

@@ -94,6 +94,14 @@ export default function Sidebar() {
                   All posts
                 </Link>
               </MTListItem>
+              <MTListItem className={`pl-10 ${LIST_ITEM_STYLES} ${route().current("admin.posts.deleted") ? "bg-blue-100" : ""}`}>
+                <Link
+                  href={route("admin.posts.deleted")}
+                  className={`w-full ${route().current("admin.posts.deleted") ? "text-gray-900 font-medium" : "text-gray-600"}`}
+                >
+                  Deleted posts
+                </Link>
+              </MTListItem>
               <MTListItem className={`pl-10 ${LIST_ITEM_STYLES} ${route().current("admin.categories.*") ? "bg-blue-100" : ""}`}>
                 <Link
                   href={route("admin.categories.index")}

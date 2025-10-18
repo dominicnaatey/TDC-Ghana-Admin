@@ -88,11 +88,49 @@ class PostController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified resource from storage (soft delete).
      */
     public function destroy(Post $post): RedirectResponse
     {
         $post->delete();
-        return redirect()->route('admin.posts.index');
+        return redirect()->route('admin.posts.index')->with('success', 'Post moved to Deleted Posts.');
+    }
+
+    /**
+     * List deleted (trashed) posts.
+     */
+    public function deleted()
+    {
+        $posts = Post::onlyTrashed()
+            ->with('category')
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        return Inertia::render('Admin/Posts/Deleted', [
+            'posts' => $posts,
+        ]);
+    }
+
+    /**
+     * Restore a soft-deleted post.
+     */
+    public function restore($id): RedirectResponse
+    {
+        $post = Post::withTrashed()->findOrFail($id);
+        $post->restore();
+
+        return redirect()->route('admin.posts.deleted')->with('success', 'Post restored successfully.');
+    }
+
+    /**
+     * Permanently delete a trashed post.
+     */
+    public function forceDelete($id): RedirectResponse
+    {
+        $post = Post::withTrashed()->findOrFail($id);
+        $post->forceDelete();
+
+        return redirect()->route('admin.posts.deleted')->with('success', 'Post permanently deleted.');
     }
 }
