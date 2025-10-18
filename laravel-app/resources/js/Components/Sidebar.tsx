@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, usePage } from "@inertiajs/react";
+import { Link } from "@inertiajs/react";
 import * as MT from "@material-tailwind/react";
 const MTCard = MT.Card as unknown as React.FC<any>;
 const MTList = MT.List as unknown as React.FC<any>;
@@ -25,8 +25,6 @@ import {
 export default function Sidebar() {
   const [open, setOpen] = React.useState<number>(0);
 
-  const { counts } = usePage<{ counts?: { posts_deleted?: number } }>().props;
-  const deletedCount = counts?.posts_deleted ?? 0;
 
   const handleOpen = (value: number) => {
     setOpen(open === value ? 0 : value);
@@ -95,14 +93,6 @@ export default function Sidebar() {
                   className={`w-full ${route().current("admin.posts.index") ? "text-gray-900 font-medium" : "text-gray-600"}`}
                 >
                   All posts
-                </Link>
-              </MTListItem>
-              <MTListItem className={`pl-10 ${LIST_ITEM_STYLES} ${route().current("admin.posts.deleted") ? "bg-blue-100" : ""}`}>
-                <Link
-                  href={route("admin.posts.deleted")}
-                  className={`w-full ${route().current("admin.posts.deleted") ? "text-gray-900 font-medium" : "text-gray-600"}`}
-                >
-                  Deleted Posts ({deletedCount})
                 </Link>
               </MTListItem>
               <MTListItem className={`pl-10 ${LIST_ITEM_STYLES} ${route().current("admin.categories.*") ? "bg-blue-100" : ""}`}>
