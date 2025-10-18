@@ -43,12 +43,22 @@ export default function Index({ posts }) {
             <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-medium">All Posts</h3>
                 <div className="flex items-center gap-2">
-                    <Link
-                        href={route('admin.posts.deleted')}
-                        className="rounded bg-gray-200 px-3 py-2 text-gray-800 hover:bg-gray-300"
-                    >
-                        Deleted Posts ({deletedCount})
-                    </Link>
+                    {deletedCount > 0 ? (
+                        <Link
+                            href={route('admin.posts.deleted')}
+                            className="rounded bg-gray-200 px-3 py-2 text-gray-800 hover:bg-gray-300"
+                        >
+                            Deleted Posts ({deletedCount})
+                        </Link>
+                    ) : (
+                        <span
+                            className="rounded bg-gray-100 px-3 py-2 text-gray-400 cursor-not-allowed pointer-events-none"
+                            aria-disabled="true"
+                            title="No deleted posts"
+                        >
+                            Deleted Posts (0)
+                        </span>
+                    )}
                     <Link
                         href={route('admin.posts.create')}
                         className="rounded bg-indigo-600 px-3 py-2 text-white hover:bg-indigo-700"
