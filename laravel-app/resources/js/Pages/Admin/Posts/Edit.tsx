@@ -9,9 +9,10 @@ type PostEditFormData = {
     content: string;
     is_published: boolean;
     published_at: string;
+    category_id: string | null;
 };
 
-export default function Edit({ post }: { post: { id: number; title?: string | null; slug?: string | null; excerpt?: string | null; content?: string | null; is_published?: boolean | number; published_at?: string | null } }) {
+export default function Edit({ post, categories }: { post: { id: number; title?: string | null; slug?: string | null; excerpt?: string | null; content?: string | null; is_published?: boolean | number; published_at?: string | null; category_id?: number | null }, categories: Array<{ id: number; name: string }> }) {
     const { data, setData, put, processing, errors } = useForm<PostEditFormData>({
         title: post.title || '',
         slug: post.slug || '',
@@ -19,6 +20,7 @@ export default function Edit({ post }: { post: { id: number; title?: string | nu
         content: post.content || '',
         is_published: !!post.is_published,
         published_at: post.published_at ? post.published_at.replace(' ', 'T') : '',
+        category_id: post.category_id ? String(post.category_id) : ''
     });
 
     const submit = (e: FormEvent<HTMLFormElement>) => {
@@ -68,6 +70,20 @@ export default function Edit({ post }: { post: { id: number; title?: string | nu
                         className="mt-1 w-full rounded border-gray-300 h-40"
                     />
                     {errors.content && <p className="text-sm text-red-600">{errors.content}</p>}
+                </div>
+                <div>
+                    <label className="block text-sm font-medium">Category</label>
+                    <select
+                        value={data.category_id ?? ''}
+                        onChange={(e: ChangeEvent<HTMLSelectElement>) => setData('category_id', e.target.value)}
+                        className="mt-1 w-full rounded border-gray-300"
+                    >
+                        <option value="">Select a category</option>
+                        {categories.map((c) => (
+                            <option key={c.id} value={String(c.id)}>{c.name}</option>
+                        ))}
+                    </select>
+                    {errors.category_id && <p className="text-sm text-red-600">{errors.category_id}</p>}
                 </div>
                 <div className="flex items-center gap-2">
                     <input

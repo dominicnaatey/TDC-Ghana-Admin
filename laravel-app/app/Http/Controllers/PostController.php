@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Models\Category;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use Illuminate\Support\Str;
@@ -17,6 +18,7 @@ class PostController extends Controller
     public function index()
     {
         $posts = Post::query()
+            ->with('category')
             ->latest()
             ->paginate(10)
             ->withQueryString();
@@ -31,7 +33,10 @@ class PostController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Admin/Posts/Create');
+        $categories = Category::query()->orderBy('name')->get(['id','name']);
+        return Inertia::render('Admin/Posts/Create', [
+            'categories' => $categories,
+        ]);
     }
 
     /**
@@ -41,11 +46,11 @@ class PostController extends Controller
     {
         $data = $request->validated();
         $data['slug'] = $data['slug'] ?? Str::slug($data['title']);
-        $data['is_published'] = (bool)($data['is_published'] ?? false);
+        $data['is_published'] = $request->boolean('is_published');
 
-        Post::create($data);
+        $post = Post::create($data);
 
-        return redirect()->route('admin.posts.index');
+        return redirect()->route('admin.posts.edit', $post)->with('success', 'Post created successfully.');
     }
 
     /**
@@ -61,8 +66,10 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
+        $categories = Category::query()->orderBy('name')->get(['id','name']);
         return Inertia::render('Admin/Posts/Edit', [
             'post' => $post,
+            'categories' => $categories,
         ]);
     }
 
@@ -73,11 +80,11 @@ class PostController extends Controller
     {
         $data = $request->validated();
         $data['slug'] = $data['slug'] ?? Str::slug($data['title']);
-        $data['is_published'] = (bool)($data['is_published'] ?? false);
+        $data['is_published'] = $request->boolean('is_published');
 
         $post->update($data);
 
-        return redirect()->route('admin.posts.index');
+        return redirect()->route('admin.posts.edit', $post)->with('success', 'Post updated successfully.');
     }
 
     /**

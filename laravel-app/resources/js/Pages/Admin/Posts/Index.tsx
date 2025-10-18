@@ -24,6 +24,7 @@ export default function Index({ posts }) {
                         <tr>
                             <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
                             <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Slug</th>
++                           <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
                             <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                             <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
                         </tr>
@@ -33,6 +34,7 @@ export default function Index({ posts }) {
                             <tr key={post.id}>
                                 <td className="px-4 py-2">{post.title}</td>
                                 <td className="px-4 py-2 text-sm text-gray-500">{post.slug}</td>
++                               <td className="px-4 py-2 text-sm text-gray-700">{post.category?.name ?? '-'}</td>
                                 <td className="px-4 py-2">
                                     {post.is_published ? (
                                         <span className="rounded bg-green-100 px-2 py-1 text-green-700 text-xs">Published</span>

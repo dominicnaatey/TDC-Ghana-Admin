@@ -25,6 +25,7 @@ class UpdatePostRequest extends FormRequest
             'content' => ['nullable', 'string'],
             'is_published' => ['sometimes', 'boolean'],
             'published_at' => ['nullable', 'date'],
+            'category_id' => ['nullable', 'integer', 'exists:categories,id'],
         ];
     }
 }

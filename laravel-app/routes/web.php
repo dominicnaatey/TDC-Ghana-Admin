@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\GalleryImageController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\CategoryController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -25,6 +26,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('posts', PostController::class);
     Route::resource('gallery', GalleryImageController::class);
     Route::resource('projects', ProjectController::class);
+    Route::resource('categories', CategoryController::class)->except(['show']);
 });
 
 Route::middleware('auth')->group(function () {

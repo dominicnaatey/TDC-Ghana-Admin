@@ -61,7 +61,7 @@ export default function Sidebar() {
         <MTAccordion open={open === 1}>
           <MTAccordionHeader
             onClick={() => handleOpen(1)}
-            className={`px-3 py-2 cursor-pointer text-gray-700 hover:bg-gray-50 rounded-lg ${route().current("admin.posts.*") || (typeof window !== "undefined" && new URL(window.location.href).searchParams.get("view") === "categories") ? "bg-blue-100" : ""}`}
+            className={`px-3 py-2 cursor-pointer text-gray-700 hover:bg-gray-50 rounded-lg ${route().current("admin.posts.*") || route().current("admin.categories.*") ? "bg-blue-100" : ""}`}
           >
             <div className="flex items-center w-full">
               <MTListItemPrefix>
@@ -94,10 +94,10 @@ export default function Sidebar() {
                   All posts
                 </Link>
               </MTListItem>
-              <MTListItem className={`pl-10 ${LIST_ITEM_STYLES} ${typeof window !== "undefined" && new URL(window.location.href).searchParams.get("view") === "categories" ? "bg-blue-100" : ""}`}>
+              <MTListItem className={`pl-10 ${LIST_ITEM_STYLES} ${route().current("admin.categories.*") ? "bg-blue-100" : ""}`}>
                 <Link
-                  href={`${route("admin.posts.index")}?view=categories`}
-                  className="w-full text-gray-600"
+                  href={route("admin.categories.index")}
+                  className={`w-full ${route().current("admin.categories.*") ? "text-gray-900 font-medium" : "text-gray-600"}`}
                 >
                   Categories
                 </Link>
