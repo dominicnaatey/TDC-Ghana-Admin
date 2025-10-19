@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -143,3 +144,28 @@ Artisan::command('db:verify-sqlite-vs-pgsql', function () {
         $this->warn('Some table counts differ. Investigate mismatches above.');
     }
 })->purpose('Verify counts between SQLite and PostgreSQL after migration');
+
+Artisan::command('db:test-create-post {--title=} {--category_id=} {--publish}', function () {
+    $title = $this->option('title') ?: 'Test Post '.now()->format('Ymd_His');
+    $slugBase = Str::slug($title);
+    $slug = $slugBase;
+
+    $i = 1;
+    while (\App\Models\Post::where('slug', $slug)->exists()) {
+        $slug = $slugBase.'-'.$i++;
+    }
+
+    $categoryId = $this->option('category_id') ?: null;
+
+    $post = \App\Models\Post::create([
+        'title' => $title,
+        'slug' => $slug,
+        'excerpt' => 'Seeded test post',
+        'content' => 'This is a seeded test content.',
+        'category_id' => $categoryId,
+        'is_published' => (bool) $this->option('publish'),
+        'published_at' => $this->option('publish') ? now() : null,
+    ]);
+
+    $this->info('Created post with ID: '.$post->id.' and slug: '.$post->slug);
+})->purpose('Create a test post to verify write access to PostgreSQL');
