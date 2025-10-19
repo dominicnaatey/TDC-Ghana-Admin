@@ -91,3 +91,55 @@ Artisan::command('db:copy-sqlite-to-pgsql', function () {
 
     $this->info("\nData copy complete. Verify counts and application behavior.");
 })->purpose('Copy data from SQLite to PostgreSQL, preserving IDs and constraints');
+
+Artisan::command('db:verify-sqlite-vs-pgsql', function () {
+    $sqlite = DB::connection('sqlite');
+    $pgsql = DB::connection('pgsql');
+
+    $tables = collect($sqlite->select("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"))
+        ->pluck('name')
+        ->reject(fn ($name) => $name === 'migrations')
+        ->values();
+
+    if ($tables->isEmpty()) {
+        $this->warn('No tables found in SQLite. Ensure SQLITE_DB_PATH points to your legacy database file.');
+        return;
+    }
+
+    $this->info('Verifying table row counts between SQLite and PostgreSQL...');
+
+    $rows = [];
+    $allMatch = true;
+
+    foreach ($tables as $table) {
+        try {
+            $sqliteCount = (int) $sqlite->table($table)->count();
+        } catch (\Throwable $e) {
+            $sqliteCount = -1;
+        }
+
+        try {
+            $pgsqlCount = (int) $pgsql->table($table)->count();
+        } catch (\Throwable $e) {
+            $pgsqlCount = -1;
+        }
+
+        $match = ($sqliteCount >= 0 && $pgsqlCount >= 0 && $sqliteCount === $pgsqlCount);
+        $allMatch = $allMatch && $match;
+
+        $rows[] = [
+            'table' => $table,
+            'sqlite_count' => $sqliteCount,
+            'pgsql_count' => $pgsqlCount,
+            'status' => $match ? 'OK' : 'MISMATCH',
+        ];
+    }
+
+    $this->table(['table', 'sqlite_count', 'pgsql_count', 'status'], $rows);
+
+    if ($allMatch) {
+        $this->info('All table counts match between SQLite and PostgreSQL.');
+    } else {
+        $this->warn('Some table counts differ. Investigate mismatches above.');
+    }
+})->purpose('Verify counts between SQLite and PostgreSQL after migration');
