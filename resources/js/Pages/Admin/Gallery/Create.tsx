@@ -93,7 +93,7 @@ export default function Create() {
                     <button
                         type="submit"
                         disabled={processing}
-                        className="rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
+                        className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
                     >
                         Save
                     </button>

@@ -87,7 +87,7 @@ export default function Index({ posts }) {
             <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-medium flex items-center gap-2">
                     All Posts
-                    <span className="rounded bg-indigo-100 px-2 py-0.5 text-indigo-700 text-sm">{totalCount}</span>
+                    <span className="rounded bg-blue-100 px-2 py-0.5 text-blue-700 text-sm">{totalCount}</span>
                 </h3>
                 <div className="flex items-center gap-2">
                     {deletedCount > 0 ? (
@@ -95,7 +95,7 @@ export default function Index({ posts }) {
                             href={route('admin.posts.deleted')}
                             className="rounded bg-gray-200 px-3 py-2 text-gray-800 hover:bg-gray-300"
                         >
-                            Deleted Posts <span className="rounded bg-indigo-100 px-2 py-0.5 text-red-700 text-sm">{deletedCount}</span>
+                            Deleted Posts <span className="rounded bg-blue-100 px-2 py-0.5 text-red-700 text-sm">{deletedCount}</span>
                         </Link>
                     ) : (
                         <span
@@ -103,12 +103,12 @@ export default function Index({ posts }) {
                             aria-disabled="true"
                             title="No deleted posts"
                         >
-                            Deleted Posts <span className="rounded bg-indigo-100 px-2 py-0.5 text-indigo-700 text-sm">0</span>
+                            Deleted Posts <span className="rounded bg-blue-100 px-2 py-0.5 text-blue-700 text-sm">0</span>
                         </span>
                     )}
                     <Link
                         href={route('admin.posts.create')}
-                        className="rounded bg-indigo-600 px-3 py-2 text-white hover:bg-indigo-700"
+                        className="rounded bg-blue-600 px-3 py-2 text-white hover:bg-blue-700"
                     >
                         New Post
                     </Link>
@@ -116,8 +116,8 @@ export default function Index({ posts }) {
             </div>
 
             {selectedIds.length > 0 && (
-                <div className="mb-3 flex items-center justify-between rounded border border-indigo-200 bg-indigo-50 p-3">
-                    <span className="text-sm text-indigo-700">{selectedIds.length} selected</span>
+                <div className="mb-3 flex items-center justify-between rounded border border-blue-200 bg-blue-50 p-3">
+                    <span className="text-sm text-blue-700">{selectedIds.length} selected</span>
                     <div className="flex gap-2">
                         <DangerButton onClick={openBulkDeleteModal} disabled={bulkProcessing}>
                             {bulkProcessing ? 'Moving…' : 'Move selected to Deleted'}
@@ -136,7 +136,7 @@ export default function Index({ posts }) {
                             <th className="px-4 py-2 w-8">
                                 <input
                                     type="checkbox"
-                                    className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                     checked={allSelected}
                                     onChange={toggleSelectAll}
                                     aria-label="Select all posts on page"
@@ -155,7 +155,7 @@ export default function Index({ posts }) {
                                 <td className="px-4 py-2 w-8">
                                     <input
                                         type="checkbox"
-                                        className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                         checked={selectedIds.includes(post.id)}
                                         onChange={() => toggleSelect(post.id)}
                                         aria-label={`Select post ${post.title}`}
@@ -181,7 +181,7 @@ export default function Index({ posts }) {
                                 <td className="px-4 py-2 text-right">
                                     <Link
                                         href={route('admin.posts.edit', post.id)}
-                                        className="mr-2 inline-flex items-center rounded p-1 text-indigo-600 hover:text-indigo-800"
+                                        className="mr-2 inline-flex items-center rounded p-1 text-blue-600 hover:text-blue-800"
                                         title="Edit"
                                     >
                                         <PencilSquareIcon className="h-5 w-5" />
@@ -206,7 +206,7 @@ export default function Index({ posts }) {
                     <Link
                         key={idx}
                         href={link.url || ''}
-                        className={`px-3 py-1 rounded ${link.active ? 'bg-indigo-600 text-white' : 'bg-white border text-gray-700'}`}
+                        className={`px-3 py-1 rounded ${link.active ? 'bg-blue-600 text-white' : 'bg-white border text-gray-700'}`}
                         dangerouslySetInnerHTML={{ __html: link.label }}
                     />
                 ))}

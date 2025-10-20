@@ -10,7 +10,7 @@ export default function Index({ images }) {
                 <h3 className="text-lg font-medium">All Images</h3>
                 <Link
                     href={route('admin.gallery.create')}
-                    className="rounded bg-indigo-600 px-3 py-2 text-white hover:bg-indigo-700"
+                    className="rounded bg-blue-600 px-3 py-2 text-white hover:bg-blue-700"
                 >
                     Upload Image
                 </Link>
@@ -26,7 +26,7 @@ export default function Index({ images }) {
                                 {img.caption && <p className="text-xs text-gray-500">{img.caption}</p>}
                             </div>
                             <div className="flex items-center gap-2">
-                                <Link href={route('admin.gallery.edit', img.id)} className="text-indigo-600 hover:text-indigo-800 text-sm">Edit</Link>
+                                <Link href={route('admin.gallery.edit', img.id)} className="text-blue-600 hover:text-blue-800 text-sm">Edit</Link>
                                 <button
                                     onClick={() => router.delete(route('admin.gallery.destroy', img.id))}
                                     className="text-red-600 hover:text-red-800 text-sm"
@@ -45,7 +45,7 @@ export default function Index({ images }) {
                     <Link
                         key={idx}
                         href={link.url || ''}
-                        className={`px-3 py-1 rounded ${link.active ? 'bg-indigo-600 text-white' : 'bg-white border text-gray-700'}`}
+                        className={`px-3 py-1 rounded ${link.active ? 'bg-blue-600 text-white' : 'bg-white border text-gray-700'}`}
                         dangerouslySetInnerHTML={{ __html: link.label }}
                     />
                 ))}

@@ -89,7 +89,7 @@ export default function Index({ categories }: { categories: { data: Array<{ id: 
                         <button
                             type="submit"
                             disabled={processing}
-                            className="rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
+                            className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
                         >
                             Create
                         </button>
@@ -130,7 +130,7 @@ export default function Index({ categories }: { categories: { data: Array<{ id: 
                                             <button
                                                 onClick={handleSave}
                                                 disabled={editForm.processing}
-                                                className="mr-2 rounded bg-indigo-600 px-3 py-1 text-white hover:bg-indigo-700"
+                                                className="mr-2 rounded bg-blue-600 px-3 py-1 text-white hover:bg-blue-700"
                                             >
                                                 Save
                                             </button>
@@ -150,7 +150,7 @@ export default function Index({ categories }: { categories: { data: Array<{ id: 
                                             <button
                                                 aria-label="Edit category"
                                                 onClick={() => startEdit(c)}
-                                                className="mr-2 inline-flex items-center text-indigo-600 hover:text-indigo-800"
+                                                className="mr-2 inline-flex items-center text-blue-600 hover:text-blue-800"
                                             >
                                                 <PencilSquareIcon className="h-5 w-5" />
                                             </button>

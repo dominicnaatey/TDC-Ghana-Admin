@@ -28,7 +28,7 @@ export default forwardRef<{ focus: () => void }, TextInputProps>(function TextIn
 
   const isPassword = type === 'password';
   const inputType = isPassword ? (visible ? 'text' : 'password') : type;
-  const baseClasses = 'rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed ';
+  const baseClasses = 'rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed ';
   const finalClassName = baseClasses + className + (isPassword && showPasswordToggle ? ' pr-10' : '');
 
   return (

@@ -99,7 +99,7 @@ export default function Deleted({ posts }: { posts: any }) {
                     <Link
                         key={idx}
                         href={link.url || ''}
-                        className={`px-3 py-1 rounded ${link.active ? 'bg-indigo-600 text-white' : 'bg-white border text-gray-700'}`}
+                        className={`px-3 py-1 rounded ${link.active ? 'bg-blue-600 text-white' : 'bg-white border text-gray-700'}`}
                         dangerouslySetInnerHTML={{ __html: link.label }}
                     />
                 ))}

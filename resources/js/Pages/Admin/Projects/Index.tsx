@@ -10,7 +10,7 @@ export default function Index({ projects }) {
                 <h3 className="text-lg font-medium">All Projects</h3>
                 <Link
                     href={route('admin.projects.create')}
-                    className="rounded bg-indigo-600 px-3 py-2 text-white hover:bg-indigo-700"
+                    className="rounded bg-blue-600 px-3 py-2 text-white hover:bg-blue-700"
                 >
                     New Project
                 </Link>
@@ -41,7 +41,7 @@ export default function Index({ projects }) {
                                 <td className="px-4 py-2 text-right">
                                     <Link
                                         href={route('admin.projects.edit', project.id)}
-                                        className="mr-2 text-indigo-600 hover:text-indigo-800"
+                                        className="mr-2 text-blue-600 hover:text-blue-800"
                                     >
                                         Edit
                                     </Link>
@@ -64,7 +64,7 @@ export default function Index({ projects }) {
                     <Link
                         key={idx}
                         href={link.url || ''}
-                        className={`px-3 py-1 rounded ${link.active ? 'bg-indigo-600 text-white' : 'bg-white border text-gray-700'}`}
+                        className={`px-3 py-1 rounded ${link.active ? 'bg-blue-600 text-white' : 'bg-white border text-gray-700'}`}
                         dangerouslySetInnerHTML={{ __html: link.label }}
                     />
                 ))}
