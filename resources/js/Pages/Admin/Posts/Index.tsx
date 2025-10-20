@@ -95,7 +95,7 @@ export default function Index({ posts }) {
                             href={route('admin.posts.deleted')}
                             className="rounded bg-gray-200 px-3 py-2 text-gray-800 hover:bg-gray-300"
                         >
-                            Deleted Posts ({deletedCount})
+                            Deleted Posts <span className="rounded bg-indigo-100 px-2 py-0.5 text-red-700 text-sm">{deletedCount}</span>
                         </Link>
                     ) : (
                         <span
@@ -103,7 +103,7 @@ export default function Index({ posts }) {
                             aria-disabled="true"
                             title="No deleted posts"
                         >
-                            Deleted Posts (0)
+                            Deleted Posts <span className="rounded bg-indigo-100 px-2 py-0.5 text-indigo-700 text-sm">0</span>
                         </span>
                     )}
                     <Link
