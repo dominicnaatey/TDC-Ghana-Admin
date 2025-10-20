@@ -169,3 +169,42 @@ Artisan::command('db:test-create-post {--title=} {--category_id=} {--publish}', 
 
     $this->info('Created post with ID: '.$post->id.' and slug: '.$post->slug);
 })->purpose('Create a test post to verify write access to PostgreSQL');
+
+Artisan::command('tinymce:test-seed', function () {
+    $year = date('Y');
+    $month = date('m');
+    $basePath = "/storage/editor/{$year}/{$month}";
+
+    $html = <<<HTML
+<p>TinyMCE verification content.</p>
+<p>
+<img src="{$basePath}/tinymce-test.jpg" alt="JPG test">
+<img src="{$basePath}/tinymce-test.png" alt="PNG test">
+<img src="{$basePath}/tinymce-test.gif" alt="GIF test">
+</p>
+HTML;
+
+    $title = 'TinyMCE Verification '.now()->format('Ymd_His');
+    $slugBase = \Illuminate\Support\Str::slug($title);
+    $slug = $slugBase;
+    $i = 1;
+    while (\App\Models\Post::where('slug', $slug)->exists()) {
+        $slug = $slugBase.'-'.$i++;
+    }
+
+    $post = \App\Models\Post::create([
+        'title' => $title,
+        'slug' => $slug,
+        'excerpt' => 'Verification post with images',
+        'content' => $html,
+        'category_id' => null,
+        'is_published' => false,
+        'published_at' => null,
+    ]);
+
+    $this->info('Created TinyMCE verification post ID: '.$post->id);
+    $this->info('Image URLs:');
+    $this->line($basePath.'/tinymce-test.jpg');
+    $this->line($basePath.'/tinymce-test.png');
+    $this->line($basePath.'/tinymce-test.gif');
+})->purpose('Create a post containing image HTML to verify DB and rendering');

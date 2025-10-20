@@ -30,6 +30,7 @@
     "dependencies": {
         "@heroicons/react": "^2.2.0",
         "@material-tailwind/react": "^2.1.10",
+        "@tinymce/tinymce-react": "^6.3.0",
         "@tiptap/extension-code-block-lowlight": "^3.7.2",
         "@tiptap/extension-image": "^3.7.2",
         "@tiptap/extension-link": "^3.7.2",
@@ -37,6 +38,7 @@
         "@tiptap/extension-youtube": "^3.7.2",
         "@tiptap/react": "^3.7.2",
         "@tiptap/starter-kit": "^3.7.2",
-        "lowlight": "^3.3.0"
+        "lowlight": "^3.3.0",
+        "tinymce": "^8.1.2"
     }
 }

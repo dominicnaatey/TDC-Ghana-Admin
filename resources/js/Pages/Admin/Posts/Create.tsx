@@ -1,6 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
 import type { FormEvent, ChangeEvent } from 'react';
+import { Editor } from '@tinymce/tinymce-react';
 
 type PostFormData = {
     title: string;
@@ -13,7 +14,7 @@ type PostFormData = {
 };
 
 export default function Create({ categories }: { categories: Array<{ id: number; name: string }> }) {
-    const { data, setData, post, processing, errors } = useForm<PostFormData>({
+    const { data, setData, post, processing, errors, transform } = useForm<PostFormData>({
         title: '',
         slug: '',
         excerpt: '',
@@ -22,6 +23,41 @@ export default function Create({ categories }: { categories: Array<{ id: number;
         published_at: '',
         category_id: ''
     });
+
+    // Normalize payload before submission to avoid validation issues
+    transform((d) => ({
+        ...d,
+        category_id: d.category_id ? Number(d.category_id) : null,
+        published_at: d.published_at || null,
+    }));
+
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
+    const getCookie = (name: string) => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return decodeURIComponent(parts.pop()!.split(';').shift()!);
+        return '';
+    };
+    const xsrfToken = getCookie('XSRF-TOKEN');
+    const imagesUploadHandler = async (blobInfo: any, _progress: (percent: number) => void) => {
+        const formData = new FormData();
+        formData.append('file', blobInfo.blob(), blobInfo.filename());
+        if (csrfToken) {
+            formData.append('_token', csrfToken);
+        } else if (xsrfToken) {
+            formData.append('_token', xsrfToken);
+        }
+        const res = await fetch(route('admin.editor.upload'), {
+            method: 'POST',
+            body: formData,
+            headers: xsrfToken ? { 'X-XSRF-TOKEN': xsrfToken } : (csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {}),
+            credentials: 'same-origin',
+        });
+        if (!res.ok) throw new Error('Upload failed');
+        const json = await res.json();
+        if (!json?.location) throw new Error('Invalid upload response');
+        return json.location as string;
+    };
 
     const submit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -64,10 +100,23 @@ export default function Create({ categories }: { categories: Array<{ id: number;
                 </div>
                 <div>
                     <label className="block text-sm font-medium">Content</label>
-                    <textarea
+                    <Editor
+                        key="create-editor"
+                        apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
                         value={data.content}
-                        onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setData('content', e.target.value)}
-                        className="mt-1 w-full rounded border-gray-300 h-40"
+                        onEditorChange={(newContent) => setData('content', newContent)}
+                        init={{
+                            height: 400,
+                            menubar: false,
+                            branding: false,
+                            plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
+                            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+                            toolbar_mode: 'sliding',
+                            images_upload_handler: imagesUploadHandler,
+                            file_picker_types: 'image media',
+                            media_live_embeds: true,
+                            content_style: 'body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Helvetica, Arial, sans-serif; font-size: 14px; }',
+                        }}
                     />
                     {errors.content && <p className="text-sm text-red-600">{errors.content}</p>}
                 </div>
