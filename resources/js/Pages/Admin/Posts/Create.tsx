@@ -1,6 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 import type { FormEvent, ChangeEvent } from 'react';
+import { useRef, useState } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 
 type PostFormData = {
@@ -11,17 +12,19 @@ type PostFormData = {
     is_published: boolean;
     published_at: string;
     category_id: string | null;
+    featured_image: File | null;
 };
 
 export default function Create({ categories }: { categories: Array<{ id: number; name: string }> }) {
-    const { data, setData, post, processing, errors, transform } = useForm<PostFormData>({
+    const { data, setData, processing, errors, transform } = useForm<PostFormData>({
         title: '',
         slug: '',
         excerpt: '',
         content: '',
         is_published: false,
         published_at: '',
-        category_id: ''
+        category_id: '',
+        featured_image: null,
     });
 
     // Normalize payload before submission to avoid validation issues
@@ -31,14 +34,12 @@ export default function Create({ categories }: { categories: Array<{ id: number;
         published_at: d.published_at || null,
     }));
 
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [submitting, setSubmitting] = useState(false);
+
+    const xsrfToken = (document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] && decodeURIComponent(document.cookie.match(/XSRF-TOKEN=([^;]+)/)![1])) || '';
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
-    const getCookie = (name: string) => {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return decodeURIComponent(parts.pop()!.split(';').shift()!);
-        return '';
-    };
-    const xsrfToken = getCookie('XSRF-TOKEN');
+
     const imagesUploadHandler = async (blobInfo: any, _progress: (percent: number) => void) => {
         const formData = new FormData();
         formData.append('file', blobInfo.blob(), blobInfo.filename());
@@ -61,7 +62,20 @@ export default function Create({ categories }: { categories: Array<{ id: number;
 
     const submit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        post(route('admin.posts.store'));
+        // Build FormData explicitly to ensure string fields (like title) are included with file uploads
+        const fd = new FormData();
+        fd.append('title', data.title);
+        if (data.slug) fd.append('slug', data.slug);
+        if (data.excerpt) fd.append('excerpt', data.excerpt);
+        if (data.content) fd.append('content', data.content);
+        fd.append('is_published', data.is_published ? '1' : '0');
+        if (data.published_at) fd.append('published_at', data.published_at);
+        if (data.category_id) fd.append('category_id', data.category_id);
+        if (data.featured_image) fd.append('featured_image', data.featured_image);
+        router.post(route('admin.posts.store'), fd, {
+            onStart: () => setSubmitting(true),
+            onFinish: () => setSubmitting(false),
+        });
     };
 
     return (
@@ -97,6 +111,57 @@ export default function Create({ categories }: { categories: Array<{ id: number;
                         className="mt-1 w-full rounded border-gray-300"
                     />
                     {errors.excerpt && <p className="text-sm text-red-600">{errors.excerpt}</p>}
+                </div>
+                <div>
+                    <label className="block text-sm font-medium">Featured Image</label>
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/jpeg,image/png,image/gif,image/webp"
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                            const file = e.target.files?.[0] ?? null;
+                            if (!file) {
+                                setData('featured_image', null);
+                                return;
+                            }
+                            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                            const maxSize = 5 * 1024 * 1024; // 5MB
+                            if (!allowedTypes.includes(file.type)) {
+                                alert('Invalid file type. Please select JPG, PNG, GIF, or WEBP.');
+                                e.target.value = '';
+                                return;
+                            }
+                            if (file.size > maxSize) {
+                                alert('File is too large. Maximum size is 5MB.');
+                                e.target.value = '';
+                                return;
+                            }
+                            setData('featured_image', file);
+                        }}
+                        className="mt-1 w-full rounded border-gray-300"
+                    />
+                    {data.featured_image && (
+                        <img
+                            src={URL.createObjectURL(data.featured_image)}
+                            alt="Featured preview"
+                            className="mt-2 h-32 w-48 object-cover rounded border"
+                        />
+                    )}
+                    <div className="mt-2 flex gap-2">
+                        {data.featured_image && (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setData('featured_image', null);
+                                    if (fileInputRef.current) fileInputRef.current.value = '';
+                                }}
+                                className="rounded border px-2 py-1"
+                            >
+                                Clear selection
+                            </button>
+                        )}
+                    </div>
+                    {errors.featured_image && <p className="text-sm text-red-600">{errors.featured_image}</p>}
                 </div>
                 <div>
                     <label className="block text-sm font-medium">Content</label>
@@ -157,7 +222,7 @@ export default function Create({ categories }: { categories: Array<{ id: number;
                 <div className="flex gap-2">
                     <button
                         type="submit"
-                        disabled={processing}
+                        disabled={processing || submitting}
                         className="rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
                     >
                         Save
