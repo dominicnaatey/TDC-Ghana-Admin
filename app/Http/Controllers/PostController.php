@@ -159,6 +159,11 @@ class PostController extends Controller
         $post = Post::withTrashed()->findOrFail($id);
         $post->restore();
 
+        // Ensure any restored post is moved to draft status
+        $post->is_published = false;
+        $post->published_at = null;
+        $post->save();
+
         return redirect()->route('admin.posts.deleted')->with('success', 'Post restored successfully.');
     }
 
