@@ -128,13 +128,25 @@ export default function Edit({ post, categories }: { post: { id: number; title?:
 
             <form onSubmit={submit} className="space-y-4 max-w-3xl">
 
-                <div className="flex justify-end">
+                <div className="flex items-center gap-2 justify-end">
+                    
                     <Link
                         href={route('admin.posts.index')}
                         className="rounded bg-gray-200 px-4 py-2 text-gray-800 hover:bg-gray-300"
                     >
                         Back to Posts
                     </Link>
+
+                    <Link
+                        href={route('admin.posts.create')}
+                        className="rounded bg-indigo-600 px-3 py-2 text-white hover:bg-indigo-700"
+                    >
+                        New Post
+                    </Link>
+                </div>
+
+                <div className="flex justify-end">
+                    
                 </div>
 
                 <div>

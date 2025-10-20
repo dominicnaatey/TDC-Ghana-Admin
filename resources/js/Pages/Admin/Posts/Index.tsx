@@ -161,7 +161,14 @@ export default function Index({ posts }) {
                                         aria-label={`Select post ${post.title}`}
                                     />
                                 </td>
-                                <td className="px-4 py-2">{post.title}</td>
+                                <td className="px-4 py-2">
+                                    <Link
+                                        href={route('admin.posts.edit', post.id)}
+                                        className=" hover:text-blue-600"
+                                    >
+                                        {post.title}
+                                    </Link>
+                                </td>
                                 <td className="px-4 py-2 text-sm text-gray-500">{post.slug}</td>
                                 <td className="px-4 py-2 text-sm text-gray-700">{post.category?.name ?? '-'}</td>
                                 <td className="px-4 py-2">
