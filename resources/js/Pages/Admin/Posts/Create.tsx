@@ -79,10 +79,18 @@ export default function Create({ categories }: { categories: Array<{ id: number;
     };
 
     return (
-        <AuthenticatedLayout header={<div className="flex items-center justify-between"><h2 className="text-xl font-semibold leading-tight text-gray-800">Create Post</h2><Link href={route('admin.posts.index')} className="rounded bg-gray-200 px-3 py-2 text-gray-800 hover:bg-gray-300">Back to Posts</Link></div>}>
+        <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Create Post</h2>}>
             <Head title="Create Post" />
 
             <form onSubmit={submit} className="space-y-4 max-w-3xl">
+                <div className="flex justify-end">
+                    <Link
+                        href={route('admin.posts.index')}
+                        className="rounded bg-gray-200 px-4 py-2 text-gray-800 hover:bg-gray-300"
+                    >
+                        Back to Posts
+                    </Link>
+                </div>
                 <div>
                     <label className="block text-sm font-medium">Title</label>
                     <input
