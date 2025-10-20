@@ -9,6 +9,7 @@ use App\Http\Requests\UpdatePostRequest;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -48,6 +49,20 @@ class PostController extends Controller
         $data['slug'] = $data['slug'] ?? Str::slug($data['title']);
         $data['is_published'] = $request->boolean('is_published');
 
+        // Normalize published_at (HTML datetime-local uses "T") and cast category_id
+        if (isset($data['published_at']) && is_string($data['published_at'])) {
+            $data['published_at'] = str_replace('T', ' ', $data['published_at']);
+        }
+        if (array_key_exists('category_id', $data)) {
+            $data['category_id'] = $data['category_id'] ? (int)$data['category_id'] : null;
+        }
+
+        if ($request->hasFile('featured_image')) {
+            $data['featured_image_path'] = $request->file('featured_image')->store('posts', 'public');
+        }
+
+        unset($data['featured_image']);
+
         $post = Post::create($data);
 
         return redirect()->route('admin.posts.edit', $post)->with('success', 'Post created successfully.');
@@ -81,6 +96,30 @@ class PostController extends Controller
         $data = $request->validated();
         $data['slug'] = $data['slug'] ?? Str::slug($data['title']);
         $data['is_published'] = $request->boolean('is_published');
+
+        // Normalize published_at (HTML datetime-local uses "T") and cast category_id
+        if (isset($data['published_at']) && is_string($data['published_at'])) {
+            $data['published_at'] = str_replace('T', ' ', $data['published_at']);
+        }
+        if (array_key_exists('category_id', $data)) {
+            $data['category_id'] = $data['category_id'] ? (int)$data['category_id'] : null;
+        }
+
+        // Handle removal of existing image
+        if ($request->boolean('remove_featured_image')) {
+            if ($post->featured_image_path && Storage::disk('public')->exists($post->featured_image_path)) {
+                Storage::disk('public')->delete($post->featured_image_path);
+            }
+            $data['featured_image_path'] = null;
+        } elseif ($request->hasFile('featured_image')) {
+            // Replace existing image if new one uploaded
+            if ($post->featured_image_path && Storage::disk('public')->exists($post->featured_image_path)) {
+                Storage::disk('public')->delete($post->featured_image_path);
+            }
+            $data['featured_image_path'] = $request->file('featured_image')->store('posts', 'public');
+        }
+
+        unset($data['featured_image'], $data['remove_featured_image']);
 
         $post->update($data);
 

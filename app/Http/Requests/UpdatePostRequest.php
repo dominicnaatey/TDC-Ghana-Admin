@@ -26,6 +26,8 @@ class UpdatePostRequest extends FormRequest
             'is_published' => ['sometimes', 'boolean'],
             'published_at' => ['nullable', 'date'],
             'category_id' => ['nullable', 'integer', 'exists:categories,id'],
+            'featured_image' => ['nullable', 'image', 'mimes:jpeg,png,gif,webp', 'max:5120'],
+            'remove_featured_image' => ['sometimes', 'boolean'],
         ];
     }
 }
