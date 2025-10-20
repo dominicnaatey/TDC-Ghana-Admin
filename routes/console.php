@@ -208,3 +208,39 @@ HTML;
     $this->line($basePath.'/tinymce-test.png');
     $this->line($basePath.'/tinymce-test.gif');
 })->purpose('Create a post containing image HTML to verify DB and rendering');
+
+Artisan::command('posts:fix-storage-urls {--dry-run}', function () {
+    $patterns = [
+        'http://localhost/storage/' => '/storage/',
+        'http://127.0.0.1:8000/storage/' => '/storage/',
+    ];
+
+    $scanned = 0;
+    $updated = 0;
+
+    \App\Models\Post::query()->select(['id', 'content'])->chunkById(100, function ($posts) use (&$scanned, &$updated, $patterns) {
+        foreach ($posts as $post) {
+            $scanned++;
+            $original = $post->content ?? '';
+            $new = $original;
+
+            foreach ($patterns as $from => $to) {
+                $new = str_replace($from, $to, $new);
+            }
+
+            if ($new !== $original) {
+                if (!$this->option('dry-run')) {
+                    $post->content = $new;
+                    $post->save();
+                }
+                $updated++;
+            }
+        }
+    });
+
+    $message = $this->option('dry-run')
+        ? "Scanned {$scanned} posts. Would update {$updated} posts."
+        : "Scanned {$scanned} posts. Updated {$updated} posts.";
+
+    $this->info($message);
+})->purpose('Replace localhost-based storage URLs in post content with relative /storage URLs');
