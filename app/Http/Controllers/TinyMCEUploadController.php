@@ -29,7 +29,9 @@ class TinyMCEUploadController extends Controller
             return response()->json(['error' => 'Failed to store uploaded file.'], 422);
         }
 
-        $url = Storage::disk('public')->url($path);
+        // Build URL based on current request (resilient to subfolder installs)
+        $base = $request->getSchemeAndHttpHost().$request->getBaseUrl();
+        $url = $base.'/storage/'.ltrim($path, '/');
 
         return response()->json(['location' => $url]);
     }
