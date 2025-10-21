@@ -39,6 +39,16 @@ export default function Create({ categories }: { categories: Array<{ id: number;
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [submitting, setSubmitting] = useState(false);
+    const [slugLocked, setSlugLocked] = useState(true);
+    const slugify = (input: string) => {
+      return input
+        .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .replace(/-{2,}/g, '-')
+        .slice(0, 100);
+    };
 
     const xsrfToken = (document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] && decodeURIComponent(document.cookie.match(/XSRF-TOKEN=([^;]+)/)![1])) || '';
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
@@ -99,19 +109,46 @@ export default function Create({ categories }: { categories: Array<{ id: number;
                     <input
                         type="text"
                         value={data.title}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => setData('title', e.target.value)}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                            const v = e.target.value;
+                            setData('title', v);
+                            if (slugLocked) setData('slug', slugify(v));
+                        }}
                         className="mt-1 w-full rounded border-gray-300"
                     />
                     {errors.title && <p className="text-sm text-red-600">{errors.title}</p>}
                 </div>
                 <div>
-                    <label className="block text-sm font-medium">Slug</label>
-                    <input
-                        type="text"
-                        value={data.slug}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => setData('slug', e.target.value)}
-                        className="mt-1 w-full rounded border-gray-300"
-                    />
+                    <label className="block text-sm font-medium flex items-center justify-between">
+                        <span>Slug</span>
+                        <button
+                            type="button"
+                            onClick={() => { const next = !slugLocked; setSlugLocked(next); if (next) setData('slug', slugify(data.title)); }}
+                            className="ml-2 rounded border px-2 py-1 text-xs"
+                        >
+                            {slugLocked ? 'Unlock' : 'Lock'}
+                        </button>
+                    </label>
+                    <div className="relative group mt-1">
+                        <input
+                            type="text"
+                            value={data.slug}
+                            readOnly={slugLocked}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => setData('slug', e.target.value)}
+                            aria-readonly={slugLocked}
+                            title={slugLocked ? 'Slug is locked. Unlock to edit.' : undefined}
+                            data-locked={slugLocked ? 'true' : 'false'}
+                            className={`w-full rounded border-gray-300 ${slugLocked ? 'cursor-not-allowed bg-gray-50' : ''}`}
+                        />
+                        {slugLocked && (
+                            <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true">
+                                <svg className="h-4 w-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <circle cx="12" cy="12" r="9"></circle>
+                                    <line x1="5" y1="5" x2="19" y2="19"></line>
+                                </svg>
+                            </div>
+                        )}
+                    </div>
                     {errors.slug && <p className="text-sm text-red-600">{errors.slug}</p>}
                 </div>
                 <div>
