@@ -4,6 +4,9 @@ import type { FormEvent, ChangeEvent } from 'react';
 import { useRef, useState } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 
+const tinyApiKey = import.meta.env.VITE_TINYMCE_API_KEY || 'no-api-key';
+
+
 type PostFormData = {
     title: string;
     slug: string;
@@ -175,13 +178,17 @@ export default function Create({ categories }: { categories: Array<{ id: number;
                     <label className="block text-sm font-medium">Content</label>
                     <Editor
                         key="create-editor"
-                        apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
+                        
+                        licenseKey="gpl"
+                        apiKey={tinyApiKey}
                         value={data.content}
                         onEditorChange={(newContent) => setData('content', newContent)}
                         init={{
                             height: 400,
                             menubar: false,
                             branding: false,
+                            skin: false,
+                            content_css: false,
                             plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
                             toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
                             toolbar_mode: 'sliding',
