@@ -25,6 +25,28 @@ import {
 export default function Sidebar() {
   const [open, setOpen] = React.useState<number>(0);
 
+  const STORAGE_KEY = 'sidebar.posts.open';
+  React.useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(STORAGE_KEY);
+      if (saved !== null) {
+        const num = Number(saved);
+        if (!Number.isNaN(num)) {
+          setOpen(num);
+        }
+      }
+    } catch (e) {
+      // ignore storage errors
+    }
+  }, []);
+
+  React.useEffect(() => {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, String(open));
+    } catch (e) {
+      // ignore storage errors
+    }
+  }, [open]);
 
   const handleOpen = (value: number) => {
     setOpen(open === value ? 0 : value);
