@@ -22,8 +22,8 @@ export default function AuthenticatedLayout({ header, children }: { header?: Rea
                         <div className="flex">
                             <div className="flex shrink-0 items-center">
                                 <Link href="/">
-                                    <ApplicationLogo className="logo-hidden block h-9 w-auto fill-current text-gray-800" />
-                                </Link>
+                                        <ApplicationLogo className="block h-9 w-auto" />
+                                    </Link>
                             </div>
 
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
@@ -45,7 +45,13 @@ export default function AuthenticatedLayout({ header, children }: { header?: Rea
                                                 type="button"
                                                 className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
                                             >
-                                                {user.name}
+                                                <img
+                                                    src="/user-icon.svg"
+                                                    alt={user.name}
+                                                    className="mr-2 h-8 w-8 rounded-full ring-1 ring-gray-300"
+                                                    draggable={false}
+                                                />
+                                                <span>{user.name}</span>
 
                                                 <svg
                                                     className="ms-2 h-4 w-4 fill-current"
