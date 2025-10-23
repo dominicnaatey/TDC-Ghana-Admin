@@ -59,7 +59,7 @@ export default function Sidebar() {
     <MTCard className="h-[calc(100vh-2rem)] w-full max-w-[18rem] mx-auto p-6 shadow-md border-r border-gray-200">
       {/* --- Brand/Header --- */}
       <div className="mb-4 flex items-center gap-3 p-2">
-        <img src="/images/logo.png" alt="brand" className="h-9 w-9 object-contain" />
+        <img src="/tdc_logo_2.png" alt="TDC Logo" className="h-9 w-9 object-contain" />
         <MTTypography color="blue-gray" className="text-lg font-semibold">
           TDC Admin
         </MTTypography>
