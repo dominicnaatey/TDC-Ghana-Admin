@@ -32,7 +32,7 @@ export default function Edit({ image }: { image: { id: number; title?: string | 
         <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Edit Image</h2>}>
             <Head title={`Edit: ${image.title}`} />
 
-            <form onSubmit={submit} className="space-y-4 max-w-3xl">
+            <form onSubmit={submit} className="space-y-4 w-full">
                 <div>
                     <label className="block text-sm font-medium">Title</label>
                     <input

@@ -34,7 +34,7 @@ export default function Create() {
         <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800">New Project</h2>}>
             <Head title="Create Project" />
 
-            <form onSubmit={submit} className="space-y-4 max-w-3xl">
+            <form onSubmit={submit} className="space-y-4 w-full">
                 <div>
                     <label className="block text-sm font-medium">Name</label>
                     <input

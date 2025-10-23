@@ -139,7 +139,7 @@ export default function Edit({ post, categories }: { post: { id: number; title?:
         <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Edit Post</h2>}>
             <Head title={`Edit: ${post.title}`} />
 
-            <form onSubmit={submit} className="space-y-4 max-w-3xl">
+            <form onSubmit={submit} className="space-y-4 w-full">
 
                 <div className="flex items-center gap-2 justify-end">
                     

@@ -95,7 +95,7 @@ export default function Create({ categories }: { categories: Array<{ id: number;
         <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Create Post</h2>}>
             <Head title="Create Post" />
 
-            <form onSubmit={submit} className="space-y-4 max-w-3xl">
+            <form onSubmit={submit} className="space-y-4 w-full">
                 <div className="flex justify-end">
                     <Link
                         href={route('admin.posts.index')}
