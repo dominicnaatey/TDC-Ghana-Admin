@@ -6,6 +6,7 @@ use App\Http\Controllers\GalleryImageController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TinyMCEUploadController;
+use App\Http\Controllers\UploadController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -40,6 +41,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // Single file upload endpoint
+    Route::post('/upload', [UploadController::class, 'store'])->name('upload.store');
 });
+
+// Public demo page to showcase the SingleFileUpload component
+Route::get('/upload-demo', function () {
+    return Inertia::render('UploadDemo');
+})->name('upload.demo');
 
 require __DIR__.'/auth.php';
