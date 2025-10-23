@@ -4,3 +4,6 @@
 
 html { border: none !important; }
 body { margin: 0 !important; }
+
+/* Hide logo SVG without impacting layout */
+.logo-hidden { visibility: hidden; }
