@@ -1,0 +1,218 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StorePostRequest;
+use App\Http\Requests\UpdatePostRequest;
+use App\Models\Post;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\JsonResponse;
+
+class PostController extends Controller
+{
+    /**
+     * List posts with filtering, sorting, and pagination.
+     */
+    public function index(Request ): JsonResponse
+    {
+         = Post::query()->with(['category:id,name']);
+
+        // Default: only published posts unless explicitly requested otherwise
+        if (->has('is_published')) {
+            ->where('is_published', ->boolean('is_published'));
+        } else {
+            ->where('is_published', true);
+        }
+
+        // Search query across title, excerpt, content
+         = trim((string) ->query('q', ''));
+        if ( !== '') {
+            ->where(function () use () {
+                ->where('title', 'like', %%)
+                   ->orWhere('excerpt', 'like', %%)
+                   ->orWhere('content', 'like', %%);
+            });
+        }
+
+        // Filter by category
+        if (->filled('category_id')) {
+            ->where('category_id', (int) ->query('category_id'));
+        }
+
+        // Date range filters
+         = ->query('from');
+         = ->query('to');
+         = ->query('date_field', 'published_at'); // or created_at
+        if () {
+            ->where(, '>=', );
+        }
+        if () {
+            ->where(, '<=', );
+        }
+
+        // Sorting
+         = ->query('sort', 'published_at');
+         = strtolower((string) ->query('order', 'desc')) === 'asc' ? 'asc' : 'desc';
+         = ['published_at', 'created_at', 'updated_at', 'title'];
+        if (! in_array(, , true)) {
+             = 'published_at';
+        }
+        ->orderBy(, )->orderBy('id', 'desc');
+
+        // Pagination
+         = (int) ->query('per_page', 10);
+         = max(1, min(100, ));
+         = ->paginate()->appends(->query());
+
+         = array_map(function (Post ) {
+            return ->transformPost();
+        }, ->items());
+
+        return response()->json([
+            'data' => ,
+            'meta' => [
+                'current_page' => ->currentPage(),
+                'per_page' => ->perPage(),
+                'total' => ->total(),
+                'last_page' => ->lastPage(),
+                'sort' => ,
+                'order' => ,
+            ],
+        ]);
+    }
+
+    /**
+     * Retrieve a single post.
+     */
+    public function show(Post , Request ): JsonResponse
+    {
+        // Hide unpublished posts from unauthenticated requests
+        if (! ->user() && ! ->is_published) {
+            return response()->json(['message' => 'Not found'], 404);
+        }
+
+        ->loadMissing('category:id,name');
+
+        return response()->json([
+            'data' => ->transformPost(),
+        ]);
+    }
+
+    /**
+     * Create a new post.
+     */
+    public function store(StorePostRequest ): JsonResponse
+    {
+        try {
+             = ->validated();
+            ['slug'] = ['slug'] ?? Str::slug(['title']);
+            ['is_published'] = ->boolean('is_published');
+
+            if (isset(['published_at']) && is_string(['published_at'])) {
+                ['published_at'] = str_replace('T', ' ', ['published_at']);
+            }
+            if (array_key_exists('category_id', )) {
+                ['category_id'] = ['category_id'] ? (int) ['category_id'] : null;
+            }
+
+            if (->hasFile('featured_image')) {
+                ['featured_image_path'] = ->file('featured_image')->store('posts', 'public');
+            }
+            unset(['featured_image']);
+
+             = Post::create();
+
+            return response()->json(['data' => ->transformPost()], 201);
+        } catch (\Throwable ) {
+            return response()->json(['message' => 'Failed to create post', 'error' => ->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Update an existing post.
+     */
+    public function update(UpdatePostRequest , Post ): JsonResponse
+    {
+        try {
+             = ->validated();
+            ['slug'] = ['slug'] ?? Str::slug(['title']);
+            ['is_published'] = ->boolean('is_published');
+
+            if (isset(['published_at']) && is_string(['published_at'])) {
+                ['published_at'] = str_replace('T', ' ', ['published_at']);
+            }
+            if (array_key_exists('category_id', )) {
+                ['category_id'] = ['category_id'] ? (int) ['category_id'] : null;
+            }
+
+            // Handle image updates
+            if (->boolean('remove_featured_image')) {
+                if (->featured_image_path && Storage::disk('public')->exists(->featured_image_path)) {
+                    Storage::disk('public')->delete(->featured_image_path);
+                }
+                ['featured_image_path'] = null;
+            } elseif (->hasFile('featured_image')) {
+                if (->featured_image_path && Storage::disk('public')->exists(->featured_image_path)) {
+                    Storage::disk('public')->delete(->featured_image_path);
+                }
+                ['featured_image_path'] = ->file('featured_image')->store('posts', 'public');
+            }
+            unset(['featured_image'], ['remove_featured_image']);
+
+            ->update();
+
+            return response()->json(['data' => ->transformPost()]);
+        } catch (\Throwable ) {
+            return response()->json(['message' => 'Failed to update post', 'error' => ->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Soft-delete a post.
+     */
+    public function destroy(Post ): JsonResponse
+    {
+        try {
+            ->delete();
+            return response()->json(null, 204);
+        } catch (\Throwable ) {
+            return response()->json(['message' => 'Failed to delete post', 'error' => ->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Normalize a Post model for API responses.
+     */
+    private function transformPost(Post ): array
+    {
+         = ->toArray();
+
+        // Absolute URL for featured image
+        ['featured_image_url'] = ->featured_image_path
+            ? url(Storage::url(->featured_image_path))
+            : null;
+
+        // Make image src attributes inside the HTML content absolute, so they
+        // work from the main site domain as well.
+        if (! empty(['content'])) {
+             = rtrim(config('app.url'), '/');
+
+             = [
+                'src=/admin/storage/,
+                src=/storage/',
+            ];
+
+             = [
+                'src= . $base . /admin/storage/,
+                src=' .  . '/storage/',
+            ];
+
+            ['content'] = str_replace(, , ['content']);
+        }
+
+        return ;
+    }
+}
